@@ -5,13 +5,13 @@ import argparse
 progName = os.path.basename(sys.argv[0])
 
 descr = """
-$prog: Fixes what is hopefully a temporary situation where Apple's UsdSkel spec requires
-       an animationSource relationship on every skinned mesh, but the official UsdSkel
-       schema requires an animationSource relationship on the skeleton.  Word is that
-       Apple is fixing this, but it doesn't hurt to have redundant relationships for now.
-       So, this script simply finds all the animationSource relationships on skeletons and
-       copies them over to the corresponding skinned meshes.  If exporting a UsdSkel asset
-       from Maya or another process, you can run this script afterwards for this temp fix.
+$prog: This fixes what is likely a temporary situation where Apple's UsdSkel spec requires
+an animationSource relationship on every skinned mesh, but the official UsdSkel
+schema requires an animationSource relationship on the skeleton.  This inconsistency
+will likely be fixed soon, but it doesn't hurt to have redundant relationships for now.
+So, this script simply finds all the animationSource relationships on skeletons and
+copies them over to the corresponding skinned meshes.  If exporting a UsdSkel asset
+from Maya or another DCC/process, you can run this script afterwards for this temp fix.
 """
 
 parser = argparse.ArgumentParser(usage=progName+" <in> <out>",description=descr.replace("$prog", progName))
