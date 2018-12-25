@@ -21,6 +21,18 @@ args = parser.parse_args()
 
 
 #------------------------------------------------------------------------------#
+
+# Traverses up to the root for a given prim looking for the closest
+# skel binding.  Note the skinningQuery is the better API but this is
+# temporary until we get a python GetPrim() binding.
+def FindSkelBindingRel(stage,prim):
+    while(prim != stage.GetPseudoRoot() and prim != None):
+        for rel in prim.GetRelationships():
+            if rel.GetName() == "skel:skeleton":
+                return(rel)
+            else:
+                prim = prim.GetParent()
+        
 def main():
     print("UsdSkelAppleFixup Begin.")
     
@@ -58,13 +70,13 @@ def main():
         skelAnimQuery = skelQuery.GetAnimQuery()
         skelAnim = UsdSkel.Animation(skelAnimQuery.GetPrim())
         for mesh in meshPrims:
-            for rel in mesh.GetRelationships():
-                if rel.GetName() == "skel:skeleton":
-                    for target in rel.GetTargets():
-                        if target == skelPrim.GetPath():
-                            print("Copying the animationSource relationship to "+mesh.GetName()) 
-                            # wire up the skel anim for temporary compatbility with Apple's expectations
-                            mesh.CreateRelationship(UsdSkel.Tokens.skelAnimationSource).AddTarget(skelAnim.GetPrim().GetPath())                            
+            rel = FindSkelBindingRel(stage,mesh)
+            if rel:
+                for target in rel.GetTargets():
+                    if target == skelPrim.GetPath():
+                        print("Copying the animationSource relationship to "+mesh.GetName()) 
+                        # wire up the skel anim for temporary compatbility with Apple's expectations
+                        mesh.CreateRelationship(UsdSkel.Tokens.skelAnimationSource).AddTarget(skelAnim.GetPrim().GetPath())                            
                        
     dstLyr.Save()                       
 
